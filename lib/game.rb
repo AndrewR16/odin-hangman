@@ -20,6 +20,7 @@ class Game
     @lives -= 1
   end
 
+  # Gets a random word from the dictionary file located in the assets folder
   def get_random_word
     dictionary = File.readlines('./assets/google-10000-english-no-swears.txt')
 
@@ -31,6 +32,7 @@ class Game
     word
   end
 
+  # Main game loop
   def new_turn
     update_game_display
 
@@ -45,6 +47,7 @@ class Game
     handle_game_completed
   end
 
+  # Clears the console and displays the current game state
   def update_game_display
     system('clear')
     # puts "\n/------------------------------/\n\n"
@@ -53,15 +56,18 @@ class Game
     puts word_rack.join(' ')
   end
 
+  # Prompts the user for a a valid letter guess or to save the game
   def get_user_guess
     puts
 
+    # Gets a valid letter guess from the user
     guess = ''
     until (guess.match?(/[a-z]/) && guess.length == 1 && lettersGuessed.include?(guess) == false) || guess == 'save'
       print "Guess a letter: "
       guess = gets.chomp.downcase
     end
 
+    # Saves the current game state to a file
     if guess == 'save'
       File.open('saved-games/saved_game.hangman', 'w') do |file|
         file.write(Marshal.dump(self))
@@ -74,6 +80,7 @@ class Game
     guess
   end
 
+  # Updates the word rack with the correctly guessed letter
   def handle_correct_guess(guessed_letter)
     secret_word.each_with_index do |letter, index|
       if letter == guessed_letter
@@ -82,6 +89,7 @@ class Game
     end
   end
 
+  # Checks if the game is over and prompts the user for a new game
   def handle_game_completed
     if word_rack.include?('_') == false
       puts "\nCongratulations! You won! The word was: " + secret_word.join
@@ -94,6 +102,7 @@ class Game
     end
   end
 
+  # Prompts the user for a new game
   def prompt_for_new_game
     userResponse = ''
     until userResponse.match?(/[yn]/)

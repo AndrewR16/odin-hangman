@@ -1,6 +1,6 @@
 # Hangman
 
-Created for the Odin Project
+Created for The Odin Project
 
 To play:  
 - Open the project and run ```ruby main.rb```  
