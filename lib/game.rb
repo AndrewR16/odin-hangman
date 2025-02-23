@@ -1,11 +1,12 @@
 # typed: false
+
 class Game
   attr_reader :secret_word, :lettersGuessed, :lives, :word_rack
 
   def initialize
-    @secret_word = get_random_word.split
+    @secret_word = get_random_word.chomp.split('')
     @lettersGuessed = []
-    @lives = 7
+    @lives = 10
     @word_rack = Array.new(secret_word.length, '_')
 
     new_turn
@@ -20,18 +21,24 @@ class Game
   end
 
   def get_random_word
-    words = File.readlines('../assets/google-10000-english-no-swears.txt')
-    return words.sample
+    dictionary = File.readlines('./assets/google-10000-english-no-swears.txt')
+
+    word = ''
+    until word.length > 5 && word.length < 12
+      word = dictionary.sample
+    end
+
+    word
   end
 
   def new_turn
     update_game_display
 
     guessed_letter = get_user_guess
-    add_guessed_letter(guessed_letter)
     if secret_word.include?(guessed_letter)
       handle_correct_guess(guessed_letter)
     else
+      add_guessed_letter(guessed_letter)
       remove_life
     end
 
@@ -39,16 +46,19 @@ class Game
   end
 
   def update_game_display
+    system('clear')
+    # puts "\n/------------------------------/\n\n"
     puts "Lives: #{lives}"
-    puts "Letters guessed: #{lettersGuessed.join(' ')}"
-    puts
+    puts "Wrong letters guessed: #{lettersGuessed.sort.join(' ')}\n\n"
     puts word_rack.join(' ')
   end
 
   def get_user_guess
-    puts 'Guess a letter: '
+    puts
+
     guess = ''
-    until (guess.match?(/[a-z]/) && guess.length == 1) || guess == 'save'
+    until (guess.match?(/[a-z]/) && guess.length == 1 && lettersGuessed.include?(guess) == false) || guess == 'save'
+      print "Guess a letter: "
       guess = gets.chomp.downcase
     end
 
@@ -73,11 +83,11 @@ class Game
   end
 
   def handle_game_completed
-    if !word_rack.include?('_')
-      puts 'Congratulations! You won! The word was: ' + secret_word.join
+    if word_rack.include?('_') == false
+      puts "\nCongratulations! You won! The word was: " + secret_word.join
       prompt_for_new_game
     elsif lives == 0
-      puts 'Game over. The word was: ' + secret_word.join
+      puts "\nGame over. The word was: " + secret_word.join
       prompt_for_new_game
     else
       new_turn
@@ -87,7 +97,7 @@ class Game
   def prompt_for_new_game
     userResponse = ''
     until userResponse.match?(/[yn]/)
-      puts 'Would you like to play again? [y/n]'
+      print 'Would you like to play again? [y/n] '
       userResponse = gets.chomp.downcase
     end
 

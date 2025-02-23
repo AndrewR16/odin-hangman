@@ -7,8 +7,9 @@ class Main
   # include Input
 
   def self.run_hangman
+    system('clear')
     puts '--- Hangman ---'
-    if Input.confirmation?('Load from save file? [y/n]') then
+    if Input.confirmation?('Load from save file? [y/n] ') then
       Main.load_game
     else
       Game.new.new_turn
